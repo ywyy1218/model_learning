@@ -3,24 +3,26 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import torch
 
-# 加载训练集和测试集数据
-train_data = np.load('./data/input.npy')
-test_data = np.load('./data/predict.npy')
+def load_data(file_path):
+    data = np.load(file_path).reshape(-1, 1)
+    return data
 
-# 绘制训练集和测试集数据
-plt.plot(train_data, label='Training Data')
-plt.plot(test_data, label='Test Data')
+def create_dataset(dataset, lookback):
+    """Transform a time series into a prediction dataset
 
-# 添加标签和标题
-plt.xlabel('Time')
-plt.ylabel('Value')
-plt.title('Training and Test Data')
+    Args:
+        dataset: A numpy array of time series, first dimension is the time steps
+        lookback: Size of window for prediction
+    """
+    X, y = [], []
+    for i in range(len(dataset) - lookback):
+        feature = dataset[i:i + lookback]
+        target = dataset[i + 1:i + lookback + 1]
+        X.append(feature)
+        y.append(target)
+    return torch.tensor(X), torch.tensor(y)
 
-# 显示图例
-plt.legend()
-
-# 显示图表
-plt.show()
 
 
